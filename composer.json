@@ -1,0 +1,7 @@
+{
+    "name": "ahebrank/background-resizer",
+    "description": "Wrap native WP image resizing to use a processing queue.",
+    "require": {
+        "a5hleyrich/wp-background-processing": "^1.0"
+    }
+}
