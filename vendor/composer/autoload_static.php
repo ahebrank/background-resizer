@@ -6,15 +6,9 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit06b7df17ab122ce42c308562b6f7f770
 {
-    public static $classMap = array (
-        'WP_Async_Request' => __DIR__ . '/..' . '/a5hleyrich/wp-background-processing/classes/wp-async-request.php',
-        'WP_Background_Process' => __DIR__ . '/..' . '/a5hleyrich/wp-background-processing/classes/wp-background-process.php',
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit06b7df17ab122ce42c308562b6f7f770::$classMap;
 
         }, null, ClassLoader::class);
     }

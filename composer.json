@@ -1,7 +1,8 @@
 {
     "name": "ahebrank/background-resizer",
     "description": "Wrap native WP image resizing to use a processing queue.",
+    "type": "wordpress-plugin",
     "require": {
-        "a5hleyrich/wp-background-processing": "^1.0"
+        "prospress/action-scheduler": "^1.5"
     }
 }

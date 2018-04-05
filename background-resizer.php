@@ -9,19 +9,27 @@ Version: 0.1
 
 class Background_Resizer {
 
+    private $queue;
+
     public function __construct() {
         add_action( 'plugins_loaded', array( $this, 'init' ) );
         add_filter( 'intermediate_image_sizes_advanced', array($this, 'filter_image_sizes_advanced'), 10, 3 );
         add_filter( 'wp_image_editors', array($this, 'set_image_editor') );
+
+        require_once plugin_dir_path( __FILE__ ) . 'vendor/prospress/action-scheduler/action-scheduler.php';
     }
 
     public function init() {
-        require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-        require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-resize-process.php';
-        require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-resize-process-imagick.php';
-        require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-resize-process-gd.php';
+        require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
+        require_once ABSPATH . WPINC . '/class-wp-image-editor-gd.php';
+        require_once ABSPATH . WPINC . '/class-wp-image-editor-imagick.php';
+
+        require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-background-resizer-callbacks.php';        
         require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-image-editor-imagick-queued.php';
         require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-image-editor-gd-queued.php';
+
+        add_action('wc_background_resizer_imagick', array('WP_Background_Resizer_Callbacks', 'resize_imagick'), 10, 6);
+        add_action('wc_background_resizer_gd', array('WP_Background_Resizer_Callbacks', 'resize_gd'), 10, 6);
     }
 
     /**
@@ -49,10 +57,12 @@ class Background_Resizer {
      * @param [type] $attachment_id
      * @return void
      */
-    public function filter_image_sizes_advanced($sizes, $metadata, $attachment_id) {
-        if ($sizes) {
-            foreach ($sizes as $k => $v) {
-                $sizes[$k]['attachment_id'] = $attachment_id;
+    public function filter_image_sizes_advanced($sizes, $metadata, $attachment_id = null) {
+        if (!is_null($attachment_id)) {
+            if ($sizes) {
+                foreach ($sizes as $k => $v) {
+                    $sizes[$k]['attachment_id'] = $attachment_id;
+                }
             }
         }
         return $sizes;

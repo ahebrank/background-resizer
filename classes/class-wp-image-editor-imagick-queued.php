@@ -12,11 +12,19 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
 	 */
     public function multi_resize($sizes) {
 
-        $resize_process = new WP_Resize_Process_Imagick($this);
+        // patch must be applied for 4.9
+        // if not, fallback to regular version
+        $first = reset($sizes);
+        if (!isset($first['attachment_id'])) {
+            return parent::multi_resize($sizes);
+        }
 
         $metadata   = array();
 		$orig_size  = $this->size;
         $orig_image = $this->image->getImage();
+
+        $filename = $this->file;
+        list( $filename, $extension, $mime_type ) = $this->get_output_format( $filename, null );
         
 		foreach ( $sizes as $size => $size_data ) {
 			if ( ! isset( $size_data['width'] ) && ! isset( $size_data['height'] ) ) {
@@ -33,7 +41,6 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
             }
 
             // save the original as a placeholder
-            list( $filename, $extension, $mime_type ) = $this->get_output_format( $filename, null );
             $metadata[$size] = array(
                 'path'      => $filename,
                 'file'      => wp_basename( apply_filters( 'image_make_intermediate_size', $filename ) ),
@@ -43,17 +50,41 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
             );
 
             // queue the real processing
-            $resize_process->push_to_queue($size_data);
+            wc_schedule_single_action( time(), 'wc_background_resizer_imagick', array(
+                'filename' => $filename, 
+                'size' => $size, 
+                'width' => $size_data['width'], 
+                'height' => $size_data['height'], 
+                'crop' => $size_data['crop'], 
+                'attachment_id' => $size_data['attachment_id']
+            ));
         }
         
+        add_action($hook, array($this, 'resize_callback'), 10, 5);
+
         $this->image = $orig_image;
         $this->size = $orig_size;
-        
-        // send off the queue
-        $resize_process->save()->dispatch();
 
 		return $metadata;
     }
 
+    public function resize_callback($size, $width, $height, $crop, $attachment_id) {
+        $this->load();
+        $orig_size  = $this->size;
+        $orig_image = $this->image->getImage();
+        
+        $resize_result = $this->resize( $width, $height, $crop );
+        $duplicate     = ( ( $orig_size['width'] == $width ) && ( $orig_size['height'] == $height ) );
+        if ( ! is_wp_error( $resize_result ) && ! $duplicate ) {
+                $resized = $this->_save($this->image);
+                $this->image->clear();
+                $this->image->destroy();
+                $this->image = null;
+                if ( ! is_wp_error( $resized ) && $resized ) {
+                        unset( $resized['path'] );
+                        WP_Background_Resizer_Callbacks::update_metadata($size, $attachment_id, $resized);
+                }
+        }
+    }
     
 }

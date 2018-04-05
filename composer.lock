@@ -4,43 +4,29 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a59234a6dbb481244bdd3065fe898368",
+    "content-hash": "2ada7effaf41729613c0f5d3f9631f6d",
     "packages": [
         {
-            "name": "a5hleyrich/wp-background-processing",
-            "version": "1.0.1",
+            "name": "prospress/action-scheduler",
+            "version": "1.5.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/A5hleyRich/wp-background-processing.git",
-                "reference": "1f070aab5058dbaf45d5435a343033ddd8a641b1"
+                "url": "https://github.com/Prospress/action-scheduler.git",
+                "reference": "f12b7da4dd6514d1ec3bce1f124b82326086d9b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/A5hleyRich/wp-background-processing/zipball/1f070aab5058dbaf45d5435a343033ddd8a641b1",
-                "reference": "1f070aab5058dbaf45d5435a343033ddd8a641b1",
+                "url": "https://api.github.com/repos/Prospress/action-scheduler/zipball/f12b7da4dd6514d1ec3bce1f124b82326086d9b2",
+                "reference": "f12b7da4dd6514d1ec3bce1f124b82326086d9b2",
                 "shasum": ""
             },
-            "require": {
-                "php": ">=5.2"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "classes/"
-                ]
-            },
+            "type": "wordpress-plugin",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0-only"
+                "GPL-3.0"
             ],
-            "authors": [
-                {
-                    "name": "Ashley Rich",
-                    "email": "hello@ashleyrich.com"
-                }
-            ],
-            "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
-            "time": "2018-02-12T09:24:05+00:00"
+            "description": "Action Scheduler for WordPress and WooCommerce",
+            "time": "2017-05-04T22:09:38+00:00"
         }
     ],
     "packages-dev": [],

@@ -1,0 +1,39 @@
+From cb53982d1fbaa5ece8af043e71a58040a824f1f0 Mon Sep 17 00:00:00 2001
+From: John Blackbourn <johnbillion@git.wordpress.org>
+Date: Sat, 16 Dec 2017 13:47:47 +0000
+Subject: [PATCH] Media: Pass the attachment ID to the
+ `intermediate_image_sizes_advanced` filter.
+
+Props drywallbmb, robbie505
+Fixes 42745
+
+Built from https://develop.svn.wordpress.org/trunk@42407
+
+
+git-svn-id: http://core.svn.wordpress.org/trunk@42236 1a063a9b-81f0-0310-95a4-ce76da25c4cd
+---
+ wp-admin/includes/image.php | 8 +++++---
+ wp-includes/version.php     | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/wp-admin/includes/image.php b/wp-admin/includes/image.php
+index 3fe8cc8e69b..4b66a5d36fa 100644
+--- a/wp-admin/includes/image.php
++++ b/wp-admin/includes/image.php
+@@ -130,11 +130,13 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
+ 		 *
+ 		 * @since 2.9.0
+ 		 * @since 4.4.0 Added the `$metadata` argument.
++		 * @since 5.0.0 Added the `$attachment_id` argument.
+ 		 *
+-		 * @param array $sizes    An associative array of image sizes.
+-		 * @param array $metadata An associative array of image metadata: width, height, file.
++		 * @param array $sizes         An associative array of image sizes.
++		 * @param array $metadata      An associative array of image metadata: width, height, file.
++		 * @param int   $attachment_id Current attachment ID.
+ 		 */
+-		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, $metadata );
++		$sizes = apply_filters( 'intermediate_image_sizes_advanced', $sizes, $metadata, $attachment_id );
+ 
+ 		if ( $sizes ) {
+ 			$editor = wp_get_image_editor( $file );
