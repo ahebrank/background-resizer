@@ -87,13 +87,19 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
         $orig_image = $this->image->getImage();
         
         $resize_result = $this->resize( $width, $height, $crop );
+        if (is_wp_error($resize_result)) {
+            throw $resize_result;
+        }
         $duplicate     = ( ( $orig_size['width'] == $width ) && ( $orig_size['height'] == $height ) );
-        if ( ! is_wp_error( $resize_result ) && ! $duplicate ) {
+        if ( ! $duplicate ) {
                 $resized = $this->_save($this->image);
                 $this->image->clear();
                 $this->image->destroy();
                 $this->image = null;
-                if ( ! is_wp_error( $resized ) && $resized ) {
+                if ( is_wp_error($resized)) {
+                    throw $resized;
+                }
+                if ( $resized ) {
                         unset( $resized['path'] );
                         WP_Background_Resizer_Callbacks::update_metadata($size, $attachment_id, $resized);
                 }
