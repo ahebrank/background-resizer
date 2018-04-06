@@ -79,7 +79,10 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
      * @return void
      */
     public function resize_callback($size, $width, $height, $crop, $attachment_id) {
-        $this->load();
+        $loaded = $this->load();
+        if (is_wp_error($loaded)) {
+            return $loaded;
+        }
         $orig_size  = $this->size;
         $orig_image = $this->image->getImage();
         
