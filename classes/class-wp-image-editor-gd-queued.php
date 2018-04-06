@@ -77,15 +77,24 @@ class WP_Image_Editor_GD_Queued extends WP_Image_Editor_GD {
      * @return void
      */
     public function resize_callback($size, $width, $height, $crop, $attachment_id) {
-        $this->load();
+        $loaded = $this->load();
+        if (is_wp_error($loaded)) {
+            throw new Exception($loaded->get_error_message(), $loaded->get_error_code());
+        }
         $orig_size  = $this->size;
         
         $image = $this->_resize( $width, $height, $crop );
+        if (is_wp_error($image)) {
+            throw new Exception($image->get_error_message(), $image->get_error_code());
+        }
         $duplicate = ( ( $orig_size['width'] == $width ) && ( $orig_size['height'] == $height ) );
-        if ( ! is_wp_error( $image ) && ! $duplicate ) {
+        if ( ! $duplicate ) {
             $resized = $this->_save( $image );
             imagedestroy( $image );
-            if ( ! is_wp_error( $resized ) && $resized ) {
+            if (is_wp_error($resized)) {
+                throw new Exception($resized->get_error_message(), $resized->get_error_code());
+            }
+            if ( $resized ) {
                 unset( $resized['path'] );
                 WP_Background_Resizer_Callbacks::update_metadata($size, $attachment_id, $resized);
             }
