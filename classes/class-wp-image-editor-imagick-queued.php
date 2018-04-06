@@ -81,14 +81,14 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
     public function resize_callback($size, $width, $height, $crop, $attachment_id) {
         $loaded = $this->load();
         if (is_wp_error($loaded)) {
-            throw $loaded;
+            throw new Exception($loaded->get_error_message(), $loaded->get_error_code());
         }
         $orig_size  = $this->size;
         $orig_image = $this->image->getImage();
         
         $resize_result = $this->resize( $width, $height, $crop );
         if (is_wp_error($resize_result)) {
-            throw $resize_result;
+            throw new Exception($resize_result->get_error_message(), $resize_result->get_error_code());
         }
         $duplicate     = ( ( $orig_size['width'] == $width ) && ( $orig_size['height'] == $height ) );
         if ( ! $duplicate ) {
@@ -97,7 +97,7 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
                 $this->image->destroy();
                 $this->image = null;
                 if ( is_wp_error($resized)) {
-                    throw $resized;
+                    throw new Exception($resized->get_error_message(), $resized->get_error_code());
                 }
                 if ( $resized ) {
                         unset( $resized['path'] );
