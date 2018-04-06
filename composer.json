@@ -3,6 +3,6 @@
     "description": "Wrap native WP image resizing to use a processing queue.",
     "type": "wordpress-plugin",
     "require": {
-        "prospress/action-scheduler": "^1.5"
+        "prospress/action-scheduler": "dev-master"
     }
 }
