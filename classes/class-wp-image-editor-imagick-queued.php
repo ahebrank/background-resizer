@@ -68,6 +68,16 @@ class WP_Image_Editor_Imagick_Queued extends WP_Image_Editor_Imagick {
 		return $metadata;
     }
 
+    /**
+     * resize action called by the scheduler
+     *
+     * @param [type] $size
+     * @param [type] $width
+     * @param [type] $height
+     * @param [type] $crop
+     * @param [type] $attachment_id
+     * @return void
+     */
     public function resize_callback($size, $width, $height, $crop, $attachment_id) {
         $this->load();
         $orig_size  = $this->size;

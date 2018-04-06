@@ -9,7 +9,8 @@ Version: 0.1
 
 class Background_Resizer {
 
-    private $queue;
+    private $batch_size = 10;
+    private $concurrent_batches = 2;
 
     public function __construct() {
         add_action( 'plugins_loaded', array( $this, 'init' ) );
@@ -28,8 +29,17 @@ class Background_Resizer {
         require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-image-editor-imagick-queued.php';
         require_once plugin_dir_path( __FILE__ ) . 'classes/class-wp-image-editor-gd-queued.php';
 
+        // set the scheduler callbacks
         add_action('wc_background_resizer_imagick', array('WP_Background_Resizer_Callbacks', 'resize_imagick'), 10, 6);
         add_action('wc_background_resizer_gd', array('WP_Background_Resizer_Callbacks', 'resize_gd'), 10, 6);
+
+        // turn down the queue processing volume
+        add_filter( 'action_scheduler_queue_runner_batch_size', function($batch_size) {
+            return $this->batch_size;
+        } );
+        add_filter( 'action_scheduler_queue_runner_concurrent_batches', function($concurrent_batches) {
+            return $this->concurrent_batches;
+        } );
     }
 
     /**
@@ -51,6 +61,7 @@ class Background_Resizer {
 
     /**
      * save the attachment_id for later use
+     * for WP < 5, this requires the patch from https://core.trac.wordpress.org/ticket/42745
      *
      * @param [type] $sizes
      * @param [type] $metadata
